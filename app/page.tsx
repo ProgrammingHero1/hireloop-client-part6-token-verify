@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button"
 
 import { SiteNavbar } from "@/components/site-navbar"
+import { HeroSection } from "@/components/hero-section"
 
 export default function Page() {
   return (
     <>
       <SiteNavbar />
+      <HeroSection />
       <main className="p-6">
         <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
           <div>
