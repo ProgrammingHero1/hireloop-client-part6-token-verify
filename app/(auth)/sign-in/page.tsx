@@ -1,12 +1,22 @@
-import type { Metadata } from "next"
+'use client'
 
-import { AuthForm } from "@/components/auth-form"
+import { AuthForm, AuthFormData } from "@/components/auth-form"
+import { authClient } from "@/lib/auth-client";
 
-export const metadata: Metadata = {
-  title: "Sign In | HireLoop",
-  description: "Sign in to your HireLoop account to continue your job hunt.",
-}
 
 export default function SignInPage() {
-  return <AuthForm mode="signin" />
+
+    const handleSignIn = async (data: AuthFormData) => {
+        const { data: SignInResponse, error } = await authClient.signIn.email({
+            email: data.email, 
+            password: data.password,
+            rememberMe: true, 
+            callbackURL: "/", 
+        });
+
+        console.log('sign in response', SignInResponse, error)
+
+    }
+
+    return <AuthForm mode="signin" onSubmit={handleSignIn} />
 }
