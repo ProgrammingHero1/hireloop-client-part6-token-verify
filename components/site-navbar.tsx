@@ -89,7 +89,7 @@ export function SiteNavbar() {
               Sign In
             </Button>
             <Button
-              render={<Link href="/get-started" />}
+              render={<Link href="/sign-up" />}
               nativeButton={false}
               className="h-[52px] rounded-[8px] bg-[#5C53FE] px-6 text-lg font-medium text-[#EDEDEF] shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#7B74FF]"
             >
@@ -156,9 +156,7 @@ export function SiteNavbar() {
               Sign In
             </Button>
             <Button
-              render={
-                <Link href="/get-started" onClick={() => setOpen(false)} />
-              }
+              render={<Link href="/sign-up" onClick={() => setOpen(false)} />}
               nativeButton={false}
               className="h-[52px] rounded-[8px] bg-[#5C53FE] px-6 text-lg font-medium text-[#EDEDEF] shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#7B74FF]"
             >
