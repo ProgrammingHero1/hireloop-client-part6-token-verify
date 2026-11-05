@@ -8,6 +8,7 @@ import { Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { useSession } from "@/lib/auth-client"
 
 // Matches the "Hireloop 2.0" design: eyebrow links + auth actions inside a
 // floating dark pill on the right of the logo.
@@ -19,7 +20,10 @@ const NAV_LINKS = [
 
 export function SiteNavbar() {
   const pathname = usePathname()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = React.useState(false);
+  const { data: session } = useSession();
+
+  console.log('user session in navbar', session)
 
   React.useEffect(() => {
     if (!open) return
@@ -81,20 +85,24 @@ export function SiteNavbar() {
           <div aria-hidden className="h-px w-6 bg-[#A8A8A8]/40" />
 
           <div className="flex items-center gap-4">
-            <Button
-              render={<Link href="/sign-in" />}
-              nativeButton={false}
-              className="h-[38px] rounded-[8px] bg-transparent px-4 text-lg font-semibold text-[#645AFF] hover:bg-white/5 hover:text-[#645AFF]"
-            >
-              Sign In
-            </Button>
-            <Button
-              render={<Link href="/sign-up" />}
-              nativeButton={false}
-              className="h-[52px] rounded-[8px] bg-[#5C53FE] px-6 text-lg font-medium text-[#EDEDEF] shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#7B74FF]"
-            >
-              Get Started
-            </Button>
+            {session?.user ?
+              <span className="text-[#EDEDEF]">Welcome, {session.user.name}!</span>
+            : <>
+              <Button
+                render={<Link href="/sign-in" />}
+                nativeButton={false}
+                className="h-[38px] rounded-[8px] bg-transparent px-4 text-lg font-semibold text-[#645AFF] hover:bg-white/5 hover:text-[#645AFF]"
+              >
+                Sign In
+              </Button>
+              <Button
+                render={<Link href="/sign-up" />}
+                nativeButton={false}
+                className="h-[52px] rounded-[8px] bg-[#5C53FE] px-6 text-lg font-medium text-[#EDEDEF] shadow-[inset_0_3px_10px_rgba(255,255,255,0.2)] hover:bg-[#7B74FF]"
+              >
+                Get Started
+              </Button>
+            </>}
           </div>
         </nav>
 
