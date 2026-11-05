@@ -14,10 +14,11 @@ export const auth = betterAuth({
     user: {
         additionalFields: {
             role: {
-                type: ['seeker', 'recruiter', 'admin'],
-                input: false
-            }
-        }
+                type: ["seeker", "recruiter", "admin"],
+                input: true,
+                defaultValue: "seeker",
+            },
+        },
     },
     socialProviders: {
         google: {

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Eye, EyeOff, Lock, Mail, User } from "lucide-react"
+import { Eye, EyeOff, Lock, Mail, Shield, User, Users } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -10,10 +10,14 @@ export type AuthMode = "signin" | "signup"
 
 // TODO: Replace this with better-auth (`@/lib/auth-client`) once the backend
 // integration is wired up. For now it only reports the collected data.
+// Roles mirror the `user.additionalFields.role` enum in `lib/auth.ts`.
+export type UserRole = "seeker" | "recruiter" | "admin"
+
 export type AuthFormData = {
   email: string
   password: string
   name?: string
+  role?: UserRole
 }
 
 const COPY = {
@@ -41,6 +45,20 @@ const inputClass =
   "h-12 w-full rounded-lg border border-white/10 bg-[#1A1A1F] pl-10 pr-3 text-base tracking-[-0.0125rem] text-[#EDEDEF] shadow-[inset_0_3px_10px_rgba(255,255,255,0.04)] outline-none transition-colors placeholder:text-white/60 focus:border-[#5C53FE]/60 focus:ring-2 focus:ring-[#5C53FE]/30 aria-invalid:border-destructive/60"
 const labelClass = "mb-2 block text-left text-sm text-[#EDEDEF]/80"
 
+// Sign-up role picker — values match better-auth's `role` field in lib/auth.ts.
+const ROLES: {
+  value: UserRole
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+}[] = [
+  { value: "seeker", label: "Job Seeker", icon: Users },
+  { value: "recruiter", label: "Recruiter", icon: User },
+  { value: "admin", label: "Admin", icon: Shield },
+]
+
+const rolePillClass =
+  "flex h-full w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border px-2 py-3 text-sm tracking-[-0.0125rem] transition-colors has-[input:focus-visible]:ring-2 has-[input:focus-visible]:ring-[#5C53FE]/60"
+
 export function AuthForm({
   mode,
   onSubmit,
@@ -56,6 +74,7 @@ export function AuthForm({
     email: "",
     password: "",
     name: "",
+    role: "seeker",
   })
   const [showPassword, setShowPassword] = React.useState(false)
 
@@ -71,7 +90,7 @@ export function AuthForm({
     const data: AuthFormData = {
       email: values.email,
       password: values.password,
-      ...(isSignup ? { name: values.name } : {}),
+      ...(isSignup ? { name: values.name, role: values.role } : {}),
     }
     console.log(`${mode} form data:`, data)
     onSubmit?.(data)
@@ -87,6 +106,42 @@ export function AuthForm({
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        {copy.showName ? (
+          <fieldset>
+            <legend className={labelClass}>Joining HireLoop as</legend>
+            <div className="grid grid-cols-3 gap-2">
+              {ROLES.map(({ value, label, icon: Icon }) => {
+                const selected = values.role === value
+
+                return (
+                  <label
+                    key={value}
+                    className={cn(
+                      rolePillClass,
+                      selected
+                        ? "border-[#5C53FE] bg-[#5C53FE]/15 text-white"
+                        : "border-white/10 bg-[#1A1A1F] text-white/70 hover:border-white/25 hover:text-white"
+                    )}
+                  >
+                    <input
+                      type="radio"
+                      name="role"
+                      value={value}
+                      checked={selected}
+                      onChange={() =>
+                        setValues((prev) => ({ ...prev, role: value }))
+                      }
+                      className="sr-only"
+                    />
+                    <Icon aria-hidden className="size-5" />
+                    <span>{label}</span>
+                  </label>
+                )
+              })}
+            </div>
+          </fieldset>
+        ) : null}
+
         {copy.showName ? (
           <div>
             <label htmlFor="name" className={labelClass}>

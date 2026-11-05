@@ -1,22 +1,20 @@
-'use client'
+"use client"
 
 import { AuthForm, AuthFormData } from "@/components/auth-form"
-import { authClient } from "@/lib/auth-client";
-
+import { authClient } from "@/lib/auth-client"
 
 export default function SignUpPage() {
+  const handleSignUp = async (data: AuthFormData) => {
+    const { data: signUpResponse, error } = await authClient.signUp.email({
+      name: data.name as string, 
+      email: data.email, 
+      password: data.password,
+      callbackURL: "/", 
+      role: data.role, // "seeker" | "recruiter" | "admin" 
+    })
 
-    const handleSignUp = async (data: AuthFormData
-    ) => {
-        const { data: signUpResponse, error } = await authClient.signUp.email({
-            name: data.name as string, // required, The name of the user.
-            email: data.email, // required, The email address of the user.
-            password: data.password, // required, The password of the user. It should be at least 8 characters long and max 128 by default.
-            callbackURL: "/", // An optional URL to redirect to after the user signs up.
-        });
+    console.log("signup response", signUpResponse, error)
+  }
 
-        console.log('signup response', signUpResponse, error)
-    }
-
-    return <AuthForm mode="signup" onSubmit={handleSignUp} />
+  return <AuthForm mode="signup" onSubmit={handleSignUp} />
 }
