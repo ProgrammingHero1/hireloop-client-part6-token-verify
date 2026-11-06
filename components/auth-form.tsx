@@ -62,10 +62,13 @@ const rolePillClass =
 export function AuthForm({
   mode,
   onSubmit,
+  error,
 }: {
   mode: AuthMode
   /** Called with the collected form values when the form is submitted. */
   onSubmit?: (data: AuthFormData) => void
+  /** Shown under the submit button, e.g. an auth API error message. */
+  error?: string | null
 }) {
   const copy = COPY[mode]
   const isSignup = mode === "signup"
@@ -245,6 +248,15 @@ export function AuthForm({
         >
           {copy.submitLabel}
         </button>
+
+        {error ? (
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+          >
+            {error}
+          </p>
+        ) : null}
       </form>
 
       <p className="mt-8 text-center text-base text-white/70">
