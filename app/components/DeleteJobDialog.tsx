@@ -1,6 +1,7 @@
 'use client'
+import { useState } from "react"
 import { Trash2Icon } from "lucide-react"
-
+import { useRouter } from 'next/navigation'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -15,15 +16,28 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { JobRow } from "../dashboard/recruiter/jobs/page"
+import { deleteJob } from "@/lib/actions/jobs"
+import { toast } from "@/components/ui/toast"
 
-export function DeleteJobDialog({ job }: {job: JobRow}) {
-
-    const handleDelete = () =>{
-        console.log( 'deleting ', job._id)
+export function DeleteJobDialog({ job }: { job: JobRow }) {
+    const [open, setOpen] = useState(false)
+    const router = useRouter()
+    
+    const handleDelete = async () => {
+        const res = await deleteJob(job._id)
+        console.log('deleting ', job._id, res)
+        if (res.deletedCount) {
+            setOpen(false);
+            toast.add({
+                title: "Job deleted",
+                description: "The job has been permanently deleted.",
+            })
+            router.refresh()
+        }
     }
 
     return (
-        <AlertDialog>
+        <AlertDialog open={open} onOpenChange={setOpen}>
             <AlertDialogTrigger
                 render={<Button variant="destructive"><Trash2Icon /></Button>}
             />
