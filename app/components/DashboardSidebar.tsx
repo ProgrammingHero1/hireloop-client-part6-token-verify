@@ -11,7 +11,8 @@ import {
     SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import { useSession } from "@/lib/auth-client"
-import { Plus, PlusCircle } from "lucide-react"
+import type { UserRole } from "@/lib/types/user"
+import { PlusCircle } from "lucide-react"
 import {
     Bookmark,
     Briefcase,
@@ -25,8 +26,6 @@ import {
 } from "lucide-react"
 import Link from "next/link"
 
-type Role = "seeker" | "recruiter" | "admin"
-
 type MenuItem = {
     id: string
     name: string
@@ -35,7 +34,7 @@ type MenuItem = {
 }
 
 // Sidebar nav from the `HL 2.0/Sidebar` Figma component (per-role variants).
-const menuItemsByRole: Record<Role, MenuItem[]> = {
+const menuItemsByRole: Record<UserRole, MenuItem[]> = {
     seeker: [
         { id: "dashboard", name: "Dashboard", url: "/dashboard/seeker", icon: LayoutDashboard },
         { id: "jobs", name: "Jobs", url: "/dashboard/seeker/jobs", icon: Briefcase },
@@ -65,7 +64,7 @@ const menuItemsByRole: Record<Role, MenuItem[]> = {
 
 export function DashboardSidebar() {
     const { data: session, isPending } = useSession();
-    const role: Role = session?.user?.role || 'seeker';
+    const role: UserRole = session?.user?.role || 'seeker';
 
     return (
         <Sidebar>
