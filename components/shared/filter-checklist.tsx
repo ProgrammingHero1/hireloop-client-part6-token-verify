@@ -33,6 +33,10 @@ export function FilterChecklist({
 }) {
     const inputType = multiple ? "checkbox" : "radio"
 
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(event.target.value)
+    }
+
     return (
         <fieldset className="flex flex-col gap-2">
             <legend className="text-base font-semibold tracking-[-0.02em] text-[#EDEDEF]">
@@ -48,6 +52,7 @@ export function FilterChecklist({
                             type={inputType}
                             name={name}
                             value={option.value}
+                            onChange={handleInputChange}
                             defaultChecked={defaultValue.includes(option.value)}
                             className="sr-only peer"
                         />

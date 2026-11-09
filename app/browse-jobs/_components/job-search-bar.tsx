@@ -7,15 +7,28 @@
 // navigate or set any URL state. Implement the real search here later
 // (e.g. router.push with ?q= plus the current filter values).
 
+import { useRouter } from "next/navigation"
 import { buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { Search } from "lucide-react"
 
 export function JobSearchBar() {
+
+    const router = useRouter()
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        // TODO: wire server-side search (router.push with ?q= and filters).
         event.preventDefault()
+
+        const formData = new FormData(event.currentTarget)
+        const data = Object.fromEntries(formData.entries())
+        
+        const search = data.searchField;
+
+        const params = new URLSearchParams()
+        params.set('search', search as string);
+        router.push(`/browse-jobs?${params.toString()}`)
+
     }
 
     return (
@@ -30,7 +43,7 @@ export function JobSearchBar() {
                     className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-[#8E9192]"
                 />
                 <Input
-                    name="q"
+                    name="searchField"
                     aria-label="Search jobs"
                     placeholder="Search by job title, keywords..."
                     className="surface-field h-12 w-full pr-3 pl-10 text-sm text-[#EDEDEF] placeholder:text-[#A0A0AB]"
