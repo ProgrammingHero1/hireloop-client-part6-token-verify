@@ -4,11 +4,14 @@
 // search params (q, type, category, salary, remote). The filter UI does
 // not touch the URL yet — that wiring is intentionally left for later.
 
+
 import { SiteNavbar } from "@/components/site-navbar"
 import { getJobs } from "@/lib/api/jobs"
 
 import { JobSearchBar } from "./_components/job-search-bar"
 import { JobFiltersPanel } from "./_components/job-filters-panel"
+import JobCard from "../components/JobCard"
+
 
 const resultsHeadingClass = "text-[22px] font-semibold tracking-[-0.02em] text-[#EDEDEF]"
 
@@ -47,17 +50,7 @@ export default async function BrowseJobsPage({
 
                         {/* Job list (replaced by the Figma job card when wired) */}
                         <ul className="mt-4 flex list-none flex-col gap-3">
-                            {jobs.map((job) => (
-                                <li key={job._id} className="surface-card p-6">
-                                    <h3 className="font-heading text-lg font-semibold text-[#EDEDEF]">
-                                        {job.title}
-                                    </h3>
-                                    <p className="mt-1 text-sm text-[#6E6E78]">
-                                        {job.companyName} • {job.location}
-                                        {job.isRemote ? " (Remote)" : ""}
-                                    </p>
-                                </li>
-                            ))}
+                            {jobs.map((job) => <JobCard key={job._id} job={job} />)}
                             {jobs.length === 0 ? (
                                 <li className="surface-card p-10 text-center text-sm text-[#6E6E78]">
                                     No jobs match your current search.
