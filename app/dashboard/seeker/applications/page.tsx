@@ -3,15 +3,24 @@
 //
 // Serves the dummy applications for now; swap the import for the real
 // loader (getApplications by user id) when the backend endpoint is ready.
-
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
 import { PageContainer } from "@/components/dashboard/page-shell"
-import { DUMMY_APPLICATIONS } from "./_dummy-data"
+import { getApplications } from "@/lib/api/applications"
+
 import { ApplicationsBoard } from "./_components/applications-board"
 
-export default function MyApplicationsPage() {
+export default async function MyApplicationsPage() {
+
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    const applications = await getApplications(`applicantId=${session?.user.id}`)
+
     return (
         <PageContainer width="wide">
-            <ApplicationsBoard applications={DUMMY_APPLICATIONS} />
+            <ApplicationsBoard applications={applications} />
         </PageContainer>
     )
 }
