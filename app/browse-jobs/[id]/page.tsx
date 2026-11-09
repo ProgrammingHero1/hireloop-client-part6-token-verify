@@ -8,7 +8,7 @@
 
 import { notFound } from "next/navigation"
 import { SiteNavbar } from "@/components/site-navbar"
-import { getJobs } from "@/lib/api/jobs"
+import { getJobById } from "@/lib/api/jobs"
 
 import { JobHeaderCard } from "./_components/job-header-card"
 import { JobHighlights } from "./_components/job-highlights"
@@ -21,7 +21,7 @@ export default async function JobDetailsPage({
     params: Promise<{ id: string }>
 }) {
     const { id } = await params
-    const job = (await getJobs()).find((job) => job._id === id)
+    const job = await getJobById(id);
 
     if (!job) notFound()
 
