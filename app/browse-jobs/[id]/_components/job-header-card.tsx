@@ -6,19 +6,37 @@ import type { JobRow } from "@/lib/types/jobs"
 import { Bookmark } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/lib/auth-client"
+import { applyToAJob } from "@/lib/actions/applications"
 export function JobHeaderCard({ job }: { job: JobRow }) {
     const { data: session } = useSession()
     const router = useRouter()
     const user = session?.user;
 
-    const handleApplyNow = () => {
+    const handleApplyNow = async() => {
         if (!user) {
             router.push(`/sign-in?redirectTo=/browse-jobs/${job._id}`)
             return
         }
-        else{
+        else if(user.role === 'seeker'){
             // save the application to the database
-            console.log("save the application to the database")
+            // TODO: only send jobId and userId or email address for the application
+            const application = {
+                jobId: job._id,
+                userId: user.id,
+                email: user.email,
+                jobTitle: job.title,
+                companyName: job.companyName,
+            }
+
+            const result = await applyToAJob(application);
+            if(result.insertedId){
+                console.log("Application submitted successfully");
+                router.push('/browse-jobs')
+            }
+
+        }
+        else{
+            console.log("user is not a job seeker")
         }
     }
 
