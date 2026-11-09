@@ -6,7 +6,8 @@ import type { JobRow } from "@/lib/types/jobs"
 import { Bookmark } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/lib/auth-client"
-import { applyToAJob } from "@/lib/actions/applications"
+import { createApplication } from "@/lib/api/applications"
+import type { ApplicationFormData } from "@/lib/types/applications"
 export function JobHeaderCard({ job }: { job: JobRow }) {
     const { data: session } = useSession()
     const router = useRouter()
@@ -18,22 +19,31 @@ export function JobHeaderCard({ job }: { job: JobRow }) {
             return
         }
         else if(user.role === 'seeker'){
-            // save the application to the database
-            // TODO: only send jobId and userId or email address for the application
-            const application = {
+            // Save the full application snapshot (job + seeker + lifecycle)
+            // so the My Applications page can render with no joins.
+            const application: ApplicationFormData = {
                 jobId: job._id,
                 userId: user.id,
                 email: user.email,
                 jobTitle: job.title,
                 companyName: job.companyName,
+                jobType: job.jobType,
+                isRemote: job.isRemote,
+                location: job.location,
+                minSalary: job.minSalary,
+                maxSalary: job.maxSalary,
+                salaryFrequency: job.salaryFrequency,
+                deadline: job.deadline,
+                appliedAt: new Date().toISOString(),
+                status: "applied",
+                archived: false,
             }
 
-            const result = await applyToAJob(application);
+            const result = await createApplication(application);
             if(result.insertedId){
                 console.log("Application submitted successfully");
                 router.push('/browse-jobs')
             }
-
         }
         else{
             console.log("user is not a job seeker")
