@@ -25,7 +25,7 @@ export function JobHeaderCard({ job }: { job: JobRow }) {
             // less more than 10 and not premium user
             if (countResult.count >= 10) {
                 // redirect to the payment page
-                router.push('/payment')
+                router.push('/checkout')
 
                 return
             }
