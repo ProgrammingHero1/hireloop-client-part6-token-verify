@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { stripe } from '@/lib/stripe'
+import { checkoutVerify } from '@/lib/actions/payments'
 
 
 export default async function CheckoutSuccessPage({ searchParams }: { searchParams: Promise<{ session_id?: string }> }) {
@@ -29,6 +30,8 @@ export default async function CheckoutSuccessPage({ searchParams }: { searchPara
         console.log({ status, payment_status, customer_email, metadata, payment_intent })
 
         // 
+        const result = await checkoutVerify(session_id)
+        console.log({ result })
 
         return (
             <section id="success">
