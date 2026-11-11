@@ -3,11 +3,12 @@ import Link from "next/link"
 import { buttonVariants } from "@/components/ui/button"
 import { PageContainer, PageHeader } from "@/components/dashboard/page-shell"
 import { cn } from "@/lib/utils"
-import { Eye, Pencil, MoreHorizontal, Plus, Users } from "lucide-react"
+import { Eye, FileText, Pencil, MoreHorizontal, Plus, Users } from "lucide-react"
 import type { JobRow, JobStatus } from "@/lib/types/jobs"
 import { formatCompensation, formatDeadline } from "@/lib/formatters"
 import { getJobs } from "@/lib/api/jobs"
 import { DeleteJobDialog } from "@/app/components/DeleteJobDialog"
+import { getSession } from "@/lib/core/server"
 
 const badgeClass =
     "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize"
@@ -34,8 +35,9 @@ const headingClass = "px-3 py-3.5 text-xs font-medium tracking-wide text-white/5
 const cellClass = "px-3 py-3.5"
 
 export default async function RecruiterJobsPage() {
-
-    const jobs: JobRow[] = await getJobs();
+    const session = await getSession()
+    console.log('recruiter', session?.user.id)
+    const jobs: JobRow[] = await getJobs(`recruiterId=${session?.user.id}`);
 
     return (
         <PageContainer width="wide">
@@ -167,6 +169,13 @@ export default async function RecruiterJobsPage() {
                                     {/* Actions */}
                                     <td className={cn(cellClass, "px-5")}>
                                         <div className="flex items-center gap-1">
+                                            <Link
+                                                href={`/dashboard/recruiter/jobs/${job._id}/applications`}
+                                                aria-label={`View applications for ${job.title}`}
+                                                className={iconButtonClass}
+                                            >
+                                                <FileText aria-hidden className="size-4" />
+                                            </Link>
                                             <button
                                                 type="button"
                                                 aria-label={`View ${job.title}`}

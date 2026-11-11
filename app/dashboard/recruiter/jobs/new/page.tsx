@@ -22,14 +22,18 @@ import {
 } from "@/lib/types/jobs"
 import { toast } from "@/components/ui/toast"
 import { useRouter } from "next/navigation"
+import { useSession } from "@/lib/auth-client"
 
 const inputClass =
     "surface-field focus-visible:ring-[#5C53FE]/30"
 
 export default function NewJobPage() {
+    const { data: session } = useSession();
+    
     const [form, setForm] = useState<JobFormData>({
         title: "",
         companyName: "",
+        recruiterId: session?.user.id ?? "",
         category: "",
         jobType: "full-time",
         isRemote: false,
