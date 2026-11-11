@@ -7,7 +7,9 @@ import { Bookmark } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useSession } from "@/lib/auth-client"
 import { createApplication, getApplicationsCount } from "@/lib/api/applications"
+import { getUserPremiumById } from "@/lib/api/user"
 import type { ApplicationFormData } from "@/lib/types/applications"
+import { toast } from "@/components/ui/toast"
 export function JobHeaderCard({ job }: { job: JobRow }) {
     const { data: session } = useSession()
     const router = useRouter()
@@ -20,13 +22,16 @@ export function JobHeaderCard({ job }: { job: JobRow }) {
         }
         else if (user.role === 'seeker') {
 
+            // is premium user
+            const premiumResult = await getUserPremiumById(user.id)
+
+            console.log('premiumResult', premiumResult)
             // number of jobs applied by this user
             const countResult = await getApplicationsCount(`applicantId=${user.id}`)
             // less more than 10 and not premium user
-            if (countResult.count >= 10) {
+            if (!premiumResult.premium && countResult.count >= 2) {
                 // redirect to the payment page
                 router.push('/checkout')
-
                 return
             }
             else {
@@ -53,6 +58,10 @@ export function JobHeaderCard({ job }: { job: JobRow }) {
                 const result = await createApplication(application);
                 if (result.insertedId) {
                     console.log("Application submitted successfully");
+                    toast.add({
+                        title: "Application submitted",
+                        description: "Your application has been submitted successfully.",
+                    })
                     router.push('/browse-jobs')
                 }
             }
