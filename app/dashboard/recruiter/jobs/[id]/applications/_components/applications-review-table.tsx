@@ -9,6 +9,7 @@ import { useState } from "react"
 import { StatusPill } from "@/components/shared/status-pill"
 import { ApplicationStatusSelect } from "@/components/shared/application-status-select"
 import { formatRelativeTime } from "@/lib/formatters"
+import { updateApplicationStatus } from "@/lib/actions/applications"
 import type { ApplicationRow, ApplicationStatus } from "@/lib/types/applications"
 
 const headerCellClass = "px-3 py-3 text-[12px] font-medium text-[#6E6E78]"
@@ -23,11 +24,15 @@ export function ApplicationsReviewTable({
         Object.fromEntries(applications.map((app) => [app._id, app.status])),
     )
 
-    const handleStatusChange = (id: string, status: ApplicationStatus) => {
-        // TODO: persist to the database (PATCH /applications/:id) — the
-        // recruiter-side status update is wired up later; for now the
-        // change only lives in this table's state.
-        setStatuses((prev) => ({ ...prev, [id]: status }))
+    const handleStatusChange = async (id: string, status: ApplicationStatus) => {
+        const result = await updateApplicationStatus(id, { status });
+
+        console.log('update result', result);
+
+        if (result.modifiedCount > 0) {
+            setStatuses((prev) => ({ ...prev, [id]: status }))
+        }
+
     }
 
     return (
