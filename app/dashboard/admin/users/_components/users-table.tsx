@@ -15,6 +15,7 @@ import { RolePill } from "@/components/shared/role-pill"
 import { Pill } from "@/components/shared/pill"
 import { UserRoleSelect } from "@/components/shared/user-role-select"
 import type { UserRow, UserRole } from "@/lib/types/users"
+import { updateUserRole } from "@/lib/actions/users"
 
 const cardShadow =
     "shadow-[0_1px_2px_rgba(0,0,0,0.35)] shadow-[inset_0_1px_rgba(255,255,255,0.035)]"
@@ -40,11 +41,15 @@ export function UsersTable({ users }: { users: readonly UserRow[] }) {
     const [search, setSearch] = useState("")
     const [roleFilter, setRoleFilter] = useState<RoleFilter>("all")
 
-    const handleRoleChange = (id: string, role: UserRole) => {
+    const handleRoleChange = async (id: string, role: UserRole) => {
         // TODO: persist to the database (better-auth setRole / PATCH) —
         // the admin-side role update is wired up later; for now the
         // change only lives in this table's state.
         setRoles((prev) => ({ ...prev, [id]: role }))
+        const res = await updateUserRole(id, role)
+        if(res.modifiedCount > 0){
+            console.log("Role updated successfully")
+        }
     }
 
     const visibleUsers = useMemo(
