@@ -7,7 +7,7 @@
 // update is wired up later.
 
 import { PageContainer, PageHeader } from "@/components/dashboard/page-shell"
-import { getUsers } from "@/lib/api/user"
+import { getUsers } from "@/lib/actions/better-auth-users"
 import { ROLE_META, type UserRow, type UserRole } from "@/lib/types/users"
 import { UsersTable } from "./_components/users-table"
 
