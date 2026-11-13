@@ -1,7 +1,8 @@
 // Single data-access module for the jobs API (Express on :5000).
 // Replaces the old split between `lib/api/jobs.ts` and `lib/actions/jobs.ts`.
-
+'use server'
 import type { JobFormData, JobRow } from "@/lib/types/jobs"
+import { protectedMutation } from "@/lib/core/server"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
 
@@ -16,13 +17,8 @@ export const getJobById = async (jobId: string): Promise<JobRow> => {
 }
 
 export const createJob = async (data: JobFormData) => {
-    const res = await fetch(`${BASE_URL}/jobs`, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
+    const api = `${BASE_URL}/jobs`;
+    const res = await protectedMutation(api, "POST", data)
     return res.json()
 }
 

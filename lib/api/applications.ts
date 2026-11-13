@@ -2,7 +2,7 @@
 // Follows the `lib/api/jobs.ts` pattern.
 'use server'
 import type { ApplicationFormData, ApplicationRow } from "@/lib/types/applications"
-import { authFetch } from "@/lib/core/server"
+import { authFetch, protectedMutation } from "@/lib/core/server"
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:5000"
 
@@ -19,12 +19,7 @@ export const getApplicationsCount = async (query = ""): Promise<{ count: number 
 }
 
 export const createApplication = async (data: ApplicationFormData) => {
-    const res = await fetch(`${BASE_URL}/applications`, {
-        method: "POST",
-        headers: {
-            "content-type": "application/json",
-        },
-        body: JSON.stringify(data),
-    })
+    const api = `${BASE_URL}/applications`;
+    const res = await protectedMutation(api, "POST", data)
     return res.json()
 }

@@ -56,6 +56,7 @@ export function JobHeaderCard({ job }: { job: JobRow }) {
                 }
 
                 const result = await createApplication(application);
+                console.log('job application result', result)
                 if (result.insertedId) {
                     console.log("Application submitted successfully");
                     toast.add({
