@@ -20,7 +20,7 @@ export default function SignUpPage() {
             email: data.email,
             password: data.password,
             callbackURL: "/",
-            // role: data.role, // "seeker" | "recruiter" | "admin"
+            role: data.role, // "seeker" | "recruiter" | "admin"
             image: data.image,
         });
 

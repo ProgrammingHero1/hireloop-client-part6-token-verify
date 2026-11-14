@@ -7,7 +7,7 @@
 // update is wired up later.
 
 import { PageContainer, PageHeader } from "@/components/dashboard/page-shell"
-import { getUsers } from "@/lib/actions/better-auth-users"
+import { getUsers } from "@/lib/api/user"
 import { ROLE_META, type UserRow, type UserRole } from "@/lib/types/users"
 import { UsersTable } from "./_components/users-table"
 
@@ -24,7 +24,7 @@ export default async function AdminUsersPage() {
     const users = Array.isArray(result) ? result : result.users
 
     const rows: UserRow[] = (users ?? []).map((user) => ({
-        id: user.id,
+        id: user._id,
         name: user.name,
         email: user.email,
         role: toUserRole(user.role),
