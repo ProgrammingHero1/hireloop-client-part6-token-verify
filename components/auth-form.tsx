@@ -21,7 +21,7 @@ export type AuthFormData = {
   name?: string
   role?: UserRole
   /** Chosen profile image. Upload (imgbb → URL) is wired up separately. */
-  image?: File
+  image?: string
 }
 
 const COPY = {
@@ -79,6 +79,7 @@ export function AuthForm({
     password: "",
     name: "",
     role: "seeker",
+    image: undefined,
   })
   const [showPassword, setShowPassword] = React.useState(false)
   /** Object URL preview of the chosen image (revoked on replace/remove). */
@@ -86,11 +87,28 @@ export function AuthForm({
 
   // onChange handler for the profile image input. Stores the file on the
   // form values; uploading it (imgbb → URL) is implemented separately.
-  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (imagePreview) URL.revokeObjectURL(imagePreview)
     setImagePreview(file ? URL.createObjectURL(file) : null)
-    setValues((prev) => ({ ...prev, image: file }))
+    
+    if (!file) return
+
+    const formData = new FormData()
+    formData.append("image", file)
+
+    const imgbbAPI = `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`
+
+    const res = await fetch(imgbbAPI, {
+      method: "POST",
+      body: formData,
+    })
+
+    const result = await res.json()
+    const imageURL = result.data.url;
+    console.log(result)
+    
+    setValues((prev) => ({ ...prev, image: imageURL }))
   }
 
   const clearImage = () => {
@@ -180,7 +198,7 @@ export function AuthForm({
               {values.image ? (
                 <>
                   <span className="min-w-0 flex-1 truncate text-sm text-white/60">
-                    {values.image.name}
+                    {values.image}
                   </span>
                   <button
                     type="button"
