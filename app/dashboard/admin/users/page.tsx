@@ -23,7 +23,7 @@ export default async function AdminUsersPage() {
     const result = await getUsers()
     const users = Array.isArray(result) ? result : result.users
 
-    const rows: UserRow[] = (users ?? []).map((user) => ({
+    const rows: UserRow[] = (users ?? []).map((user: UserRow) => ({
         id: user._id,
         name: user.name,
         email: user.email,
