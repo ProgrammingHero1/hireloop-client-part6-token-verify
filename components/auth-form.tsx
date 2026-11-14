@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { Eye, EyeOff, Lock, Mail, Shield, User, Users } from "lucide-react"
+import { Eye, EyeOff, Lock, Mail, Trash2, Upload, User, Users } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { PillGroup } from "@/components/shared/pill-group"
@@ -20,6 +20,8 @@ export type AuthFormData = {
   password: string
   name?: string
   role?: UserRole
+  /** Chosen profile image. Upload (imgbb → URL) is wired up separately. */
+  image?: File
 }
 
 const COPY = {
@@ -48,6 +50,7 @@ const inputClass =
 const labelClass = "mb-2 block text-left text-sm text-[#EDEDEF]/80"
 
 // Sign-up role picker — values match better-auth's `role` field in lib/auth.ts.
+// Admin is intentionally not offered at sign-up; it's granted internally.
 const ROLES: {
   value: UserRole
   label: string
@@ -55,7 +58,6 @@ const ROLES: {
 }[] = [
   { value: "seeker", label: "Job Seeker", icon: Users },
   { value: "recruiter", label: "Recruiter", icon: User },
-  { value: "admin", label: "Admin", icon: Shield },
 ]
 
 export function AuthForm({
@@ -79,6 +81,23 @@ export function AuthForm({
     role: "seeker",
   })
   const [showPassword, setShowPassword] = React.useState(false)
+  /** Object URL preview of the chosen image (revoked on replace/remove). */
+  const [imagePreview, setImagePreview] = React.useState<string | null>(null)
+
+  // onChange handler for the profile image input. Stores the file on the
+  // form values; uploading it (imgbb → URL) is implemented separately.
+  const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    setImagePreview(file ? URL.createObjectURL(file) : null)
+    setValues((prev) => ({ ...prev, image: file }))
+  }
+
+  const clearImage = () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview)
+    setImagePreview(null)
+    setValues((prev) => ({ ...prev, image: undefined }))
+  }
 
   const setField =
     (field: keyof AuthFormData) =>
@@ -92,7 +111,9 @@ export function AuthForm({
     const data: AuthFormData = {
       email: values.email,
       password: values.password,
-      ...(isSignup ? { name: values.name, role: values.role } : {}),
+      ...(isSignup
+        ? { name: values.name, role: values.role, image: values.image }
+        : {}),
     }
     console.log(`${mode} form data:`, data)
     onSubmit?.(data)
@@ -116,9 +137,62 @@ export function AuthForm({
               value={values.role ?? "seeker"}
               onChange={(role) => setValues((prev) => ({ ...prev, role }))}
               options={ROLES}
-              className="grid grid-cols-3 gap-2"
+              className="grid grid-cols-2 gap-2"
               pillClassName="flex-col h-full w-full justify-center gap-1.5 px-2 py-3 tracking-[-0.0125rem]"
             />
+          </fieldset>
+        ) : null}
+
+        {copy.showName ? (
+          <fieldset>
+            <legend className={labelClass}>Profile photo (optional)</legend>
+            <div className="flex items-center gap-3">
+              {/* Preview once an image is picked, default icon otherwise. */}
+              {imagePreview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={imagePreview}
+                  alt="Selected profile photo preview"
+                  className="size-12 shrink-0 rounded-full border border-white/10 object-cover"
+                />
+              ) : (
+                <span
+                  aria-hidden
+                  className="flex size-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#1A1A1F]"
+                >
+                  <User className="size-5 text-white/50" />
+                </span>
+              )}
+
+              {/* TODO: upload the chosen file to imgbb on submit and pass
+                  the returned URL to better-auth — handled separately. */}
+              <label className="flex h-11 cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-[#1A1A1F] px-4 text-sm text-[#EDEDEF]/80 transition-colors hover:border-white/25 hover:text-white">
+                <Upload aria-hidden className="size-4" />
+                {values.image ? "Change image" : "Upload image"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="sr-only"
+                  onChange={handleImageChange}
+                />
+              </label>
+
+              {values.image ? (
+                <>
+                  <span className="min-w-0 flex-1 truncate text-sm text-white/60">
+                    {values.image.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={clearImage}
+                    aria-label="Remove selected image"
+                    className="rounded-md p-2 text-white/50 transition-colors hover:text-white"
+                  >
+                    <Trash2 aria-hidden className="size-4" />
+                  </button>
+                </>
+              ) : null}
+            </div>
           </fieldset>
         ) : null}
 

@@ -8,6 +8,7 @@ import { Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+import { UserAvatar } from "@/components/shared/user-avatar"
 import { useSession, signOut } from "@/lib/auth-client"
 
 
@@ -91,6 +92,11 @@ export function SiteNavbar() {
           <div className="flex items-center gap-4">
             {session?.user ?
               <>
+                <UserAvatar
+                  src={session.user.image}
+                  name={session.user.name}
+                  className="size-9"
+                />
                 <span className="text-[#EDEDEF]">Welcome, {session.user.name}!</span>
                 <Button
                   onClick={handleSignOut}

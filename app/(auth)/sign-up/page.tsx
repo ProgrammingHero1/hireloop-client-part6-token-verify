@@ -21,6 +21,8 @@ export default function SignUpPage() {
             password: data.password,
             callbackURL: "/",
             role: data.role, // "seeker" | "recruiter" | "admin"
+            // TODO: upload data.image (imgbb) first, then pass the returned URL:
+            // image: uploadedImageUrl,
         });
 
         console.log("signup response", signUpResponse, signUpError)
